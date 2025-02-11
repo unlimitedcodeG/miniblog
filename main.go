@@ -1,25 +1,24 @@
 package main
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"context"
+	"fmt"
+	"time"
 )
 
+func doTask(ctx context.Context) {
+	select {
+	case <-time.After(3 * time.Second): // 任务完成
+		fmt.Println("Task completed")
+	case <-ctx.Done(): // 监听取消信号
+		fmt.Println("Task cancelled:", ctx.Err())
+	}
+}
+
 func main() {
-	app := fiber.New()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	go doTask(ctx)
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
-
-	app.Get("/:value", func(c *fiber.Ctx) error {
-		return c.SendString("value: " + c.Params(("value")))
-	})
-
-	app.Get("/:name?", func(c *fiber.Ctx) error {
-		if c.Params("name") != "" {
-			return c.SendString("Hello " + c.Params("name"))
-		}
-		return c.SendString("Where is John?")
-	})
-	app.Listen(":3300")
+	time.Sleep(4 * time.Second)
 }
