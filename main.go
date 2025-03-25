@@ -27,6 +27,9 @@ func main() {
 	}
 
 	close(jobs)
+	// 	关闭 jobs 通道，表示不会再有新任务发送。
+
+	// 被关闭的通道仍然可以接收数据，直到所有数据读取完毕。
 	fmt.Println("sent all jobs")
 
 	<-done
