@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 )
 
 func f(from string) {
@@ -11,14 +10,10 @@ func f(from string) {
 	}
 }
 func main() {
-	f("direct")
+	message := make(chan string)
 
-	go f("goroutine")
+	go func() { message <- "ping" }()
 
-	go func(msg string) {
-		fmt.Println(msg)
-	}("going")
-
-	time.Sleep(time.Second)
-	fmt.Println("done")
+	msg := <-message
+	fmt.Println(msg)
 }
