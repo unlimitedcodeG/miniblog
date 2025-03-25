@@ -11,6 +11,8 @@ func main() {
 	go func() {
 		for {
 			j, more := <-jobs
+			// j 就是value 就是job的值  more 只不过是通道是否关闭 如果还在传递 就是true
+			// 反之就是false
 			if more {
 				fmt.Println("received job", j)
 			} else {
