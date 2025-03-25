@@ -6,22 +6,23 @@ import (
 )
 
 func main() {
-
-	timer1 := time.NewTimer(2 * time.Second)
-
-	<-timer1.C
-	fmt.Println("Timer 1 fired")
-
-	timer2 := time.NewTimer(time.Second)
-
+	ticker := time.NewTicker(500 * time.Microsecond)
+	done := make(chan bool)
+	// defer ticker.Stop()
 	go func() {
-		<-timer2.C
-		fmt.Println("Timer 2 fired")
+		for {
+			select {
+			case <-done:
+				return
+			case t := <-ticker.C:
+				fmt.Println("Tick at", t)
+			}
+		}
 	}()
 
-	stop2 := timer2.Stop()
-	if stop2 {
-		fmt.Println("Timer 2 stopped")
-	}
-	time.Sleep(2 * time.Second)
+	time.Sleep(1600 * time.Millisecond)
+
+	ticker.Stop()
+	done <- true
+	fmt.Println("Ticker stopped")
 }
