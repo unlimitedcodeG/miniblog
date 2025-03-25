@@ -2,16 +2,23 @@ package main
 
 import (
 	"fmt"
-	"reflect"
+	"time"
 )
 
+func f(from string) {
+	for i := 0; i < 3; i++ {
+		fmt.Println(from, ":", i)
+	}
+}
 func main() {
-	var num float64 = 1.2345
+	f("direct")
 
-	fmt.Println("old value of pointer:", num)
+	go f("goroutine")
 
-	pointer := reflect.ValueOf(&num)
+	go func(msg string) {
+		fmt.Println(msg)
+	}("going")
 
-	newValue := pointer.Elem()
-	fmt.Println(newValue)
+	time.Sleep(time.Second)
+	fmt.Println("done")
 }
