@@ -3,30 +3,34 @@ package main
 import "fmt"
 
 func main() {
-	messages := make(chan string)
-	signals := make(chan bool)
+	// 带缓冲的 channel，容量为 5
+	jobs := make(chan int, 5)
+	// 用于通知主 goroutine 所有工作已完成
+	done := make(chan bool)
 
-	select {
-	case msg := <-messages:
-		fmt.Println("received message", msg)
-	default:
-		fmt.Println("no message received")
+	go func() {
+		for {
+			j, more := <-jobs
+			if more {
+				fmt.Println("received job", j)
+			} else {
+				fmt.Println("recevied all jobs")
+				done <- true
+				return
+			}
+		}
+	}()
+
+	for j := 1; j <= 3; j++ {
+		jobs <- j
+		fmt.Println("sent job", j)
 	}
 
-	msg := "hi"
-	select {
-	case messages <- msg:
-		fmt.Println("sent message", msg)
-	default:
-		fmt.Println("no message sent")
-	}
+	close(jobs)
+	fmt.Println("sent all jobs")
 
-	select {
-	case msg := <-messages:
-		fmt.Println("received message", msg)
-	case sig := <-signals:
-		fmt.Println("received signal", sig)
-	default:
-		fmt.Println("no activity")
-	}
+	<-done
+
+	_, ok := <-jobs
+	fmt.Println("recevied more jobs:", ok)
 }
