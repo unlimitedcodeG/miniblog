@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package hello;
+
+// 这里添加 go_package 选项，确保 Go 代码生成时有正确的 import 路径
+option go_package = "./pb;pb";
+
+message HelloRequest {
+    string name = 1;
+}
+
+message HelloResponse {
+    string message = 1;
+}
+
+service HelloService {
+    rpc SayHello (HelloRequest) returns (HelloResponse);
+}
