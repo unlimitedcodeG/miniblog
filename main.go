@@ -1,25 +1,27 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func main() {
 
-	queue := make(chan string, 2)
-	queue <- "one"
-	queue <- "two"
+	timer1 := time.NewTimer(2 * time.Second)
 
-	close(queue)
-	// ✅ 即使通道关闭，仍然可以继续接收已发送但尚未读取的数据。
-	// ✅ 使用 range 遍历通道时，通道关闭后会自动停止迭代，不会导致错误或死锁。
-	// ✅ 只有通道为空且已关闭时，range 才会结束遍历，否则会一直阻塞等待数据。
-	for {
-		elem, ok := <-queue
-		if !ok {
-			break
-		}
-		fmt.Println(elem)
+	<-timer1.C
+	fmt.Println("Timer 1 fired")
+
+	timer2 := time.NewTimer(time.Second)
+
+	go func() {
+		<-timer2.C
+		fmt.Println("Timer 2 fired")
+	}()
+
+	stop2 := timer2.Stop()
+	if stop2 {
+		fmt.Println("Timer 2 stopped")
 	}
-	// for elem:=range queue{
-	// 	fmt.Println(elem)
-	// }
+	time.Sleep(2 * time.Second)
 }
