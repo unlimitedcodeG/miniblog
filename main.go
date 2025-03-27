@@ -1,36 +1,21 @@
 package main
 
-import (
-	"fmt"
-	"os"
-)
+import "fmt"
+
+func mayPanic() {
+	panic("a problem")
+}
 
 func main() {
 
-	f := createFile("/tmp/defer.txt")
-	defer closeFile(f)
-	writeFile(f)
-}
+	defer func() {
+		if r := recover(); r != nil {
 
-func createFile(p string) *os.File {
-	fmt.Println("creating")
-	f, err := os.Create(p)
-	if err != nil {
-		panic(err)
-	}
-	return f
-}
+			fmt.Println("Recovered. Error:\n", r)
+		}
+	}()
 
-func writeFile(f *os.File) {
-	fmt.Println("writing")
-	fmt.Fprintln(f, "data")
-}
+	mayPanic()
 
-func closeFile(f *os.File) {
-	fmt.Println("closing")
-	err := f.Close()
-
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println("After mayPanic()")
 }
