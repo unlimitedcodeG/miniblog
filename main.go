@@ -1,31 +1,42 @@
 package main
 
 import (
-	"fmt"
-	"sync"
-	"sync/atomic"
+    "fmt"
+    "sync"
 )
 
+type Container struct {
+    mu       sync.Mutex
+    counters map[string]int
+}
+
+func (c *Container) inc(name string) {
+
+    c.mu.Lock()
+    defer c.mu.Unlock()
+    c.counters[name]++
+}
+
 func main() {
+    c := Container{
 
-	var ops atomic.Uint64
+        counters: map[string]int{"a": 0, "b": 0},
+    }
 
-	var wg sync.WaitGroup
+    var wg sync.WaitGroup
 
-	for i := 0; i < 50; i++ {
-		wg.Add(1)
+    doIncrement := func(name string, n int) {
+        for i := 0; i < n; i++ {
+            c.inc(name)
+        }
+        wg.Done()
+    }
 
-		go func() {
-			for c := 0; c < 1000; c++ {
+    wg.Add(3)
+    go doIncrement("a", 10000)
+    go doIncrement("a", 10000)
+    go doIncrement("b", 10000)
 
-				ops.Add(1)
-			}
-
-			wg.Done()
-		}()
-	}
-
-	wg.Wait()
-
-	fmt.Println("ops:", ops.Load())
+    wg.Wait()
+    fmt.Println(c.counters)
 }
