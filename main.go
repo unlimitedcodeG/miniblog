@@ -1,28 +1,20 @@
 package main
 
-import (
-	"fmt"
-	"time"
-)
+import "fmt"
+
+func ping(pings chan<- string, msg string) {
+	pings <- msg
+}
+
+func pong(pings <-chan string, pongs chan<- string) {
+	msg := <-pings
+	pongs <- msg
+}
 
 func main() {
-	ticker := time.NewTicker(500 * time.Microsecond)
-	done := make(chan bool)
-	// defer ticker.Stop()
-	go func() {
-		for {
-			select {
-			case <-done:
-				return
-			case t := <-ticker.C:
-				fmt.Println("Tick at", t)
-			}
-		}
-	}()
-
-	time.Sleep(1600 * time.Millisecond)
-
-	ticker.Stop()
-	done <- true
-	fmt.Println("Ticker stopped")
+	pings := make(chan string, 1)
+	pongs := make(chan string, 1)
+	ping(pings, "passed message")
+	pong(pings, pongs)
+	fmt.Println(<-pongs)
 }
