@@ -2,43 +2,30 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"sync"
+	"sync/atomic"
 )
 
 func main() {
 
-	requests := make(chan int, 5)
-	for i := 1; i <= 5; i++ {
-		requests <- i
-	}
-	close(requests)
+	var ops atomic.Uint64
 
-	limiter := time.Tick(200 * time.Millisecond)
+	var wg sync.WaitGroup
 
-	for req := range requests {
-		<-limiter
-		fmt.Println("request", req, time.Now())
-	}
+	for i := 0; i < 50; i++ {
+		wg.Add(1)
 
-	burstyLimiter := make(chan time.Time, 3)
+		go func() {
+			for c := 0; c < 1000; c++ {
 
-	for i := 0; i < 3; i++ {
-		burstyLimiter <- time.Now()
+				ops.Add(1)
+			}
+
+			wg.Done()
+		}()
 	}
 
-	go func() {
-		for t := range time.Tick(200 * time.Millisecond) {
-			burstyLimiter <- t
-		}
-	}()
+	wg.Wait()
 
-	burstyRequests := make(chan int, 5)
-	for i := 1; i <= 5; i++ {
-		burstyRequests <- i
-	}
-	close(burstyRequests)
-	for req := range burstyRequests {
-		<-burstyLimiter
-		fmt.Println("request", req, time.Now())
-	}
+	fmt.Println("ops:", ops.Load())
 }
