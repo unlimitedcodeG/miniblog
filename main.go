@@ -1,36 +1,21 @@
 package main
 
-import "fmt"
+import (
+	"sync"
+)
 
-func mayPanic() {
-	panic("a problem")
+type Container struct {
+	mu       sync.Mutex
+	counters map[string]int
+}
+
+func (c *Container) inc(name string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.counters[name]++
 }
 
 
-
-func SliceDemo(){
-	var s1 [] = int 
-	s2 := make([]int,9)
-	fmt.Println(s2) 
-	s1 = make([]int,9,9)
-	print(s1)
-	s1[0]  = 0 
-	s1[1] = 1 
-	fmt.Println(s1[0:])	
-	s1 = append(s1, 1)
-	println("---",s1[0])
-
-}
-func main() {
-	SliceDemo()
-	defer func() {
-		if r := recover(); r != nil {
-
-			fmt.Println("Recovered. Error:\n", r)
-		}
-	}()
-
-	mayPanic()
-
-	fmt.Println("After mayPanic()")
+func main(){
+	
 }
