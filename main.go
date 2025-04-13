@@ -15,7 +15,6 @@ func (c *Container) inc(name string) {
 	c.counters[name]++
 }
 
+func main() {
 
-func main(){
-	
 }
