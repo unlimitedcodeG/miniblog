@@ -1,0 +1,10 @@
+Count,Message,Traceback,Nodes
+3189,'Events' object has no attribute 'request_failure',"  File ""/Users/shuiyue/.pyenv/versions/3.10.9/lib/python3.10/site-packages/locust/user/task.py"", line 340, in run
+    self.execute_next_task()
+  File ""/Users/shuiyue/.pyenv/versions/3.10.9/lib/python3.10/site-packages/locust/user/task.py"", line 373, in execute_next_task
+    self.execute_task(self._task_queue.popleft())
+  File ""/Users/shuiyue/.pyenv/versions/3.10.9/lib/python3.10/site-packages/locust/user/task.py"", line 490, in execute_task
+    task(self.user)
+  File ""/Users/shuiyue/Desktop/miniblog/locust_grpc_test.py"", line 34, in login
+    self.environment.events.request_failure.fire(
+",local
