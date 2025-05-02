@@ -1,19 +1,13 @@
 package main
 
 import (
-	"crypto/sha256"
 	"fmt"
 )
 
 func main() {
+	str := "Hi"
+	b := []byte(str)
 
-	s := "sha this string"
-	h := sha256.New()
-
-	h.Write([]byte(s))
-
-	bs := h.Sum(nil)
-
-	fmt.Println(s)
-	fmt.Printf("%x\n", bs)
+	fmt.Println(b)
+	fmt.Println(string(b))
 }
