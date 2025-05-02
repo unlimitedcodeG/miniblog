@@ -5,6 +5,7 @@ import (
 )
 
 func main() {
+	// #短变量声明；
 	str := "Hi"
 	b := []byte(str)
 
