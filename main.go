@@ -1,36 +1,27 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"path/filepath"
+	"embed"
 )
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
+//go:embed folder/single_file.txt
+var fileString string
+
+//go:embed folder/single_file.txt
+var fileByte []byte
+
+//go:embed folder/single_file.txt
+//go:embed folder/*.hash
+var folder embed.FS
 
 func main() {
 
-	f, err := os.CreateTemp("", "sample")
-	check(err)
+	print(fileString)
+	print(string(fileByte))
 
-	fmt.Println("Temp file name:", f.Name())
+	content1, _ := folder.ReadFile("folder/file1.hash")
+	print(string(content1))
 
-	defer os.Remove(f.Name())
-
-	_, err = f.Write([]byte{1, 2, 3, 4})
-	check(err)
-
-	dname, err := os.MkdirTemp("", "sampledir")
-	check(err)
-	fmt.Println("Temp dir name:", dname)
-
-	defer os.RemoveAll(dname)
-
-	fname := filepath.Join(dname, "file1")
-	err = os.WriteFile(fname, []byte{1, 2}, 0666)
-	check(err)
+	content2, _ := folder.ReadFile("folder/file2.hash")
+	print(string(content2))
 }
