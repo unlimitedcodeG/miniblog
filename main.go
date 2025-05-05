@@ -1,13 +1,9 @@
 package main
 
-import (
-	"fmt"
-	"os"
-)
+import "fmt"
 
 func main() {
-
-	defer fmt.Println("!")
-
-	os.Exit(3)
+	str := "hello"
+	str[0] = 'x'
+	fmt.Println(str)
 }
